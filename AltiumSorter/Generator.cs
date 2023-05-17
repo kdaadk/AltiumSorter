@@ -5,8 +5,6 @@ namespace AltiumSorter
     public static class Generator
     {
         private static readonly Random Rnd = new();
-        private const int MaxLength = 1024;
-        private const int ChunkSize = 100000;
 
         private static readonly string[] Fruits =
         {
@@ -38,16 +36,16 @@ namespace AltiumSorter
 
         private static readonly string[] Prepositions = { "to", "from", "over", "under", "on", };
 
-        public static void Generate(long size, string name)
+        public static void Generate(long totalLines, long fileChunkSize, string name)
         {
             if (File.Exists(name))
                 File.Delete(name);
             
             long writtenLines = 0;
-            while (writtenLines < size)
+            while (writtenLines < totalLines)
             {
-                var remainsLines = size - writtenLines;
-                var nextWriteSize = remainsLines >= ChunkSize ? ChunkSize : remainsLines % ChunkSize;
+                var remainsLines = totalLines - writtenLines;
+                var nextWriteSize = remainsLines >= fileChunkSize ? fileChunkSize : remainsLines % fileChunkSize;
                 WriteToFile(nextWriteSize, name);
                 writtenLines += nextWriteSize;
             }

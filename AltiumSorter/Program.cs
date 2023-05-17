@@ -1,6 +1,20 @@
 ﻿using System.Diagnostics;
 using AltiumSorter;
 
+Solve();
+
+void Solve()
+{
+    const string fileName = "generated.txt";
+    var (fileChunkSize, totalLines) = ParseArgs();
+
+    var timer = new Stopwatch();
+    GenerateRandomFile(fileChunkSize ,fileName, totalLines, timer);
+    
+    timer.Reset();
+    Sort(fileChunkSize, fileName, totalLines, timer);
+}
+      
 (int fileChunkSize, int totalLines) ParseArgs()
 {
     var rawChunkSize = args.Length > 0 ? args[0] : "50";
@@ -12,22 +26,21 @@ using AltiumSorter;
     return (chunkSize, lines);
 }
 
-const string fileName = "generated.txt";
-var (fileChunkSize, totalLines) = ParseArgs();
+void GenerateRandomFile(long fileChunkSize, string fileName, int totalLines, Stopwatch stopwatch)
+{
+    Console.WriteLine($"started generating file with totalLines: {totalLines}");
+    stopwatch.Start();
+    Generator.Generate(totalLines, fileChunkSize, fileName);
+    stopwatch.Stop();
+    Console.WriteLine("ended generating in ms: " + stopwatch.ElapsedMilliseconds);
+}
 
-var timer = new Stopwatch();
-Console.WriteLine($"started generating file with totalLines: {totalLines}");
-timer.Start();
-Generator.Generate(totalLines, fileName);
-timer.Stop();
-Console.WriteLine("ended generating in ms: " + timer.ElapsedMilliseconds);
-
-timer.Reset();
-timer.Start();
-Console.WriteLine($"started sorting file with fileChunkSize in mb: {fileChunkSize}");
-LargeTextSorter.Sort(fileName, fileChunkSize, totalLines);
-timer.Stop();
-Console.WriteLine("ended sorting in ms: " + timer.ElapsedMilliseconds);
-Console.ReadLine();
-
-      
+void Sort(int chunkSize, string fileName, int totalLines, Stopwatch stopwatch)
+{
+    stopwatch.Start();
+    Console.WriteLine($"started sorting file with fileChunkSize in mb: {chunkSize/(1024*1024)}");
+    LargeTextSorter.Sort(fileName, chunkSize, totalLines);
+    stopwatch.Stop();
+    Console.WriteLine("ended sorting in ms: " + stopwatch.ElapsedMilliseconds);
+    Console.ReadLine();
+}
